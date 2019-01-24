@@ -24,7 +24,11 @@ def track_field(field):
         return False
 
     # Do not track relations to LogEntry
-    if getattr(field, 'rel', None) is not None and field.rel.to == LogEntry:
+    if getattr(field, 'remote_field', None) is not None and field.remote_field.model == LogEntry:
+        return False
+
+    # 1.8 check
+    elif getattr(field, 'rel', None) is not None and field.rel.to == LogEntry:
         return False
 
     return True
@@ -65,7 +69,7 @@ def get_field_value(obj, field):
         # to its naive form before we can accuratly compare them for changes.
         try:
             value = field.to_python(getattr(obj, field.name, None))
-            if value is not None and settings.USE_TZ:
+            if value is not None and settings.USE_TZ and not timezone.is_naive(value):
                 value = timezone.make_naive(value, timezone=timezone.utc)
         except ObjectDoesNotExist:
             value = field.default if field.default is not NOT_PROVIDED else None
