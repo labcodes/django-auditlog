@@ -42,6 +42,7 @@ class LogEntryManager(models.Manager):
             kwargs.setdefault('content_type', ContentType.objects.get_for_model(instance))
             kwargs.setdefault('object_pk', pk)
             kwargs.setdefault('object_repr', smart_text(instance))
+            kwargs.setdefault('affected_user', getattr(instance, 'affected_user', None))
 
             if isinstance(pk, integer_types):
                 kwargs.setdefault('object_id', pk)
@@ -178,6 +179,7 @@ class LogEntry(models.Model):
     action = models.PositiveSmallIntegerField(choices=Action.choices, verbose_name=_("action"))
     changes = models.TextField(blank=True, verbose_name=_("change message"))
     actor = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='+', verbose_name=_("actor"))
+    affected_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='affecting_log_entries', verbose_name=_("affected user"))
     remote_addr = models.GenericIPAddressField(blank=True, null=True, verbose_name=_("remote address"))
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_("timestamp"))
     additional_data = JSONField(blank=True, null=True, verbose_name=_("additional data"))
