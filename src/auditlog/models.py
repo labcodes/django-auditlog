@@ -189,6 +189,9 @@ class LogEntry(models.Model):
     class Meta:
         get_latest_by = 'timestamp'
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['-timestamp']),
+        ]
         verbose_name = _("log entry")
         verbose_name_plural = _("log entries")
 
