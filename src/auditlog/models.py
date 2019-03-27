@@ -6,7 +6,7 @@ import ast
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db import models, DEFAULT_DB_ALIAS
 from django.db.models import QuerySet, Q
 from django.utils import formats, timezone
@@ -17,6 +17,9 @@ from django.utils.translation import ugettext_lazy as _
 from jsonfield_compat import JSONField
 from dateutil import parser
 from dateutil.tz import gettz
+
+
+DELETED_TEXT = '-DELETED-'
 
 
 class LogEntryManager(models.Manager):
@@ -41,8 +44,14 @@ class LogEntryManager(models.Manager):
         if changes is not None:
             kwargs.setdefault('content_type', ContentType.objects.get_for_model(instance))
             kwargs.setdefault('object_pk', pk)
-            kwargs.setdefault('object_repr', smart_text(instance))
-            kwargs.setdefault('affected_user', getattr(instance, 'affected_user', None))
+            try:
+                kwargs.setdefault('object_repr', smart_text(instance))
+            except ObjectDoesNotExist:
+                kwargs.setdefault('object_repr', DELETED_TEXT)
+            try:
+                kwargs.setdefault('affected_user', getattr(instance, 'affected_user', None))
+            except ObjectDoesNotExist:
+                kwargs.setdefault('affected_user', None)
 
             if isinstance(pk, integer_types):
                 kwargs.setdefault('object_id', pk)
