@@ -1,10 +1,8 @@
-from __future__ import unicode_literals
-
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.db.models import Model
 
 
-class AuditlogModelRegistry(object):
+class AuditlogModelRegistry:
     """
     A registry that keeps track of the models that use Auditlog to track changes.
     """
@@ -24,7 +22,7 @@ class AuditlogModelRegistry(object):
         if custom is not None:
             self._signals.update(custom)
 
-    def register(self, model=None, include_fields=[], exclude_fields=[]):
+    def register(self, model=None, include_fields=None, exclude_fields=None):
         """
         Register a model with auditlog. Auditlog will then track mutations on this model's instances.
 
@@ -35,6 +33,11 @@ class AuditlogModelRegistry(object):
         :param exclude_fields: The fields to exclude. Overrides the fields to include.
         :type exclude_fields: list
         """
+        if include_fields is None:
+            include_fields = []
+        if exclude_fields is None:
+            exclude_fields = []
+
         def registrar(cls):
             """Register models for a given class."""
             if not issubclass(cls, Model):
@@ -115,7 +118,7 @@ class AuditlogModelRegistry(object):
 
 class AuditLogModelRegistry(AuditlogModelRegistry):
     def __init__(self, *args, **kwargs):
-        super(AuditLogModelRegistry, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         raise DeprecationWarning("Use AuditlogModelRegistry instead of AuditLogModelRegistry, AuditLogModelRegistry will be removed in django-auditlog 0.4.0 or later.")
 
 

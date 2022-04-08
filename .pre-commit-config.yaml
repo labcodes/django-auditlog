@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/browniebroke/django-codemod
+    # django-codemod is a tool to automatically
+    # fix Django deprecations.
+    # Any tag/version (>=1.9.0):
+    # https://github.com/browniebroke/django-codemod/tags
+    #
+    # Automatic execution of this hook has been disabled
+    # because it is a bit slow but its configuration is
+    # kept here so it can be easily run:
+    #
+    # pre-commit run --hook-stage manual djcodemod
+    rev: v1.9.1
+    hooks:
+      - id: djcodemod
+        stages: [manual]
+        args: [
+            'run',
+            '--deprecated-in', '1.9',
+            '--deprecated-in', '1.10',
+            '--deprecated-in', '1.11',
+            '--deprecated-in', '2.0',
+            '--deprecated-in', '2.1',
+            '--deprecated-in', '2.2',
+            '--deprecated-in', '3.0',
+        ]
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.31.1
+    hooks:
+      - id: pyupgrade
+        args: ['--py3-plus', '--py39-plus']
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+    -   id: fix-byte-order-marker
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: debug-statements
+    -   id: detect-private-key
+    -   id: double-quote-string-fixer
+    -   id: mixed-line-ending
+    -   id: no-commit-to-branch
+        args: [--branch, main, --branch, master]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+    -   id: flake8
+  - repo: local
+    hooks:
+    -   id: eslint
+        name: eslint-local
+        entry: node_modules/eslint/bin/eslint.js --config=.eslintrc.js --ignore-path=.eslintignore
+        language: system
+        files: \.jsx?$

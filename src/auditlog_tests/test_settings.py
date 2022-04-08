@@ -23,6 +23,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 ROOT_URLCONF = []
 
 USE_TZ = True

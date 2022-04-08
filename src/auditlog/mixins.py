@@ -1,7 +1,8 @@
 import json
 
 from django.conf import settings
-from django.core import urlresolvers
+from django.urls import reverse
+
 try:
     from django.urls.exceptions import NoReverseMatch
 except ImportError:
@@ -10,7 +11,7 @@ except ImportError:
 MAX = 75
 
 
-class LogEntryAdminMixin(object):
+class LogEntryAdminMixin:
 
     def created(self, obj):
         return obj.timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -19,9 +20,9 @@ class LogEntryAdminMixin(object):
     def user_url(self, obj):
         if obj.actor:
             app_label, model = settings.AUTH_USER_MODEL.split('.')
-            viewname = 'admin:%s_%s_change' % (app_label, model.lower())
-            link = urlresolvers.reverse(viewname, args=[obj.actor.id])
-            return u'<a href="%s">%s</a>' % (link, obj.actor)
+            viewname = f'admin:{app_label}_{model.lower()}_change'
+            link = reverse(viewname, args=[obj.actor.id])
+            return f'<a href="{link}">{obj.actor}</a>'
 
         return 'system'
     user_url.allow_tags = True
@@ -29,13 +30,13 @@ class LogEntryAdminMixin(object):
 
     def resource_url(self, obj):
         app_label, model = obj.content_type.app_label, obj.content_type.model
-        viewname = 'admin:%s_%s_change' % (app_label, model)
+        viewname = f'admin:{app_label}_{model}_change'
         try:
-            link = urlresolvers.reverse(viewname, args=[obj.object_id])
+            link = reverse(viewname, args=[obj.object_id])
         except NoReverseMatch:
             return obj.object_repr
         else:
-            return u'<a href="%s">%s</a>' % (link, obj.object_repr)
+            return f'<a href="{link}">{obj.object_repr}</a>'
     resource_url.allow_tags = True
     resource_url.short_description = 'Resource'
 
