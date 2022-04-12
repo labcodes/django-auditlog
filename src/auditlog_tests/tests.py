@@ -575,7 +575,8 @@ class CharfieldTextfieldModelTest(TestCase):
 
 
 class PostgresArrayFieldModelTest(TestCase):
-
+    databases = "__all__"
+    DATABASE_URL = "postgres://splendidspoon:dev1@127.0.0.1:5454/splendidspoon_dev"
     def setUp(self):
         self.obj = PostgresArrayFieldModel.objects.create(
             arrayfield=[PostgresArrayFieldModel.RED, PostgresArrayFieldModel.GREEN],

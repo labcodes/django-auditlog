@@ -6,15 +6,13 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db import models, DEFAULT_DB_ALIAS
-from django.db.models import QuerySet, Q
+from django.db.models import Q, QuerySet, JSONField
 from django.utils import formats, timezone
-from django.utils.encoding import python_2_unicode_compatible, smart_text
-from django.utils.six import iteritems, integer_types
-from django.utils.translation import ugettext_lazy as _
 
-from jsonfield_compat import JSONField
 from dateutil import parser
 from dateutil.tz import gettz
+from django.utils.translation import gettext_lazy as _
+from django.utils.encoding import smart_str
 
 
 DELETED_TEXT = '-DELETED-'
@@ -43,7 +41,7 @@ class LogEntryManager(models.Manager):
             kwargs.setdefault('content_type', ContentType.objects.get_for_model(instance))
             kwargs.setdefault('object_pk', pk)
             try:
-                kwargs.setdefault('object_repr', smart_text(instance))
+                kwargs.setdefault('object_repr', smart_str(instance))
             except ObjectDoesNotExist:
                 kwargs.setdefault('object_repr', DELETED_TEXT)
             try:
@@ -51,7 +49,7 @@ class LogEntryManager(models.Manager):
             except ObjectDoesNotExist:
                 kwargs.setdefault('affected_user', None)
 
-            if isinstance(pk, integer_types):
+            if isinstance(pk, int):
                 kwargs.setdefault('object_id', pk)
 
             get_additional_data = getattr(instance, 'get_additional_data', None)
@@ -86,10 +84,10 @@ class LogEntryManager(models.Manager):
         content_type = ContentType.objects.get_for_model(instance.__class__)
         pk = self._get_pk_value(instance)
 
-        if isinstance(pk, integer_types):
+        if isinstance(pk, int):
             return self.filter(content_type=content_type, object_id=pk)
         else:
-            return self.filter(content_type=content_type, object_pk=smart_text(pk))
+            return self.filter(content_type=content_type, object_pk=smart_str(pk))
 
     def get_for_objects(self, queryset):
         """
@@ -106,10 +104,10 @@ class LogEntryManager(models.Manager):
         content_type = ContentType.objects.get_for_model(queryset.model)
         primary_keys = list(queryset.values_list(queryset.model._meta.pk.name, flat=True))
 
-        if isinstance(primary_keys[0], integer_types):
+        if isinstance(primary_keys[0], int):
             return self.filter(content_type=content_type).filter(Q(object_id__in=primary_keys)).distinct()
         elif isinstance(queryset.model._meta.pk, models.UUIDField):
-            primary_keys = [smart_text(pk) for pk in primary_keys]
+            primary_keys = [smart_str(pk) for pk in primary_keys]
             return self.filter(content_type=content_type).filter(Q(object_pk__in=primary_keys)).distinct()
         else:
             return self.filter(content_type=content_type).filter(Q(object_pk__in=primary_keys)).distinct()
@@ -148,7 +146,6 @@ class LogEntryManager(models.Manager):
         return pk
 
 
-@python_2_unicode_compatible
 class LogEntry(models.Model):
     """
     Represents an entry in the audit log. The content type is saved along with the textual and numeric (if available)
@@ -225,7 +222,7 @@ class LogEntry(models.Model):
             return {}
 
     @property
-    def changes_str(self, colon=': ', arrow=smart_text(' \u2192 '), separator='; '):
+    def changes_str(self, colon=': ', arrow=smart_str(' \u2192 '), separator='; '):
         """
         Return the changes recorded in this log entry as a string. The formatting of the string can be customized by
         setting alternate values for colon, arrow and separator. If the formatting is still not satisfying, please use
@@ -238,8 +235,8 @@ class LogEntry(models.Model):
         """
         substrings = []
 
-        for field, values in iteritems(self.changes_dict):
-            substring = smart_text('{field_name:s}{colon:s}{old:s}{arrow:s}{new:s}').format(
+        for field, values in self.changes_dict.items():
+            substring = smart_str('{field_name:s}{colon:s}{old:s}{arrow:s}{new:s}').format(
                 field_name=field,
                 colon=colon,
                 old=values[0],
@@ -261,7 +258,7 @@ class LogEntry(models.Model):
         model_fields = auditlog.get_model_fields(model._meta.model)
         changes_display_dict = {}
         # grab the changes_dict and iterate through
-        for field_name, values in iteritems(self.changes_dict):
+        for field_name, values in self.changes_dict.items():
             # try to get the field attribute on the model
             try:
                 field = model._meta.get_field(field_name)
@@ -271,7 +268,7 @@ class LogEntry(models.Model):
             values_display = []
             # handle choices fields and Postgres ArrayField to get human readable version
             choices_dict = None
-            if hasattr(field, 'choices') and len(field.choices) > 0:
+            if hasattr(field, 'choices') and field.choices and len(field.choices) > 0:
                 choices_dict = dict(field.choices)
             if hasattr(field, 'base_field') and getattr(field.base_field, 'choices', False):
                 choices_dict = dict(field.base_field.choices)

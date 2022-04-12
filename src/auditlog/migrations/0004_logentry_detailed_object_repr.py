@@ -1,6 +1,5 @@
 from django.db import models, migrations
-
-from jsonfield_compat import JSONField
+from django.db.models import JSONField
 
 
 class Migration(migrations.Migration):

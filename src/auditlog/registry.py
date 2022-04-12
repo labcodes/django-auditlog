@@ -1,6 +1,5 @@
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.db.models import Model
-from django.utils.six import iteritems
 
 
 class AuditlogModelRegistry:
@@ -23,7 +22,7 @@ class AuditlogModelRegistry:
         if custom is not None:
             self._signals.update(custom)
 
-    def register(self, model=None, include_fields=[], exclude_fields=[], mapping_fields={}):
+    def register(self, model=None, include_fields=None, exclude_fields=None, mapping_fields=None):
         """
         Register a model with auditlog. Auditlog will then track mutations on this model's instances.
 
@@ -34,6 +33,14 @@ class AuditlogModelRegistry:
         :param exclude_fields: The fields to exclude. Overrides the fields to include.
         :type exclude_fields: list
         """
+        if include_fields is None:
+            include_fields = []
+
+        if exclude_fields is None:
+            exclude_fields = []
+        if mapping_fields is None:
+            mapping_fields = {}
+            
         def registrar(cls):
             """Register models for a given class."""
             if not issubclass(cls, Model):

@@ -45,10 +45,10 @@ DATABASES = {
     'postgres': {
         'ENGINE': POSTGRES_DRIVER,
         'NAME': 'auditlog_tests_db',
-        'USER': 'postgres',
-        'PASSWORD': '',
+        'USER': 'splendidspoon',
+        'PASSWORD': 'dev1',
         'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'PORT': '5454',
     }
 }
 
@@ -65,6 +65,11 @@ TEMPLATES = [
         },
     },
 ]
+if django.VERSION[:2] >= (3, 2):
+    TEMPLATES[0]['OPTIONS']['context_processors'] = [
+        'django.template.context_processors.request',
+        *TEMPLATES[0]['OPTIONS']['context_processors']
+    ]
 
 ROOT_URLCONF = 'auditlog_tests.urls'
 
