@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # django-auditlog documentation build configuration file, created by
 # sphinx-quickstart on Wed Nov  6 20:39:48 2013.
@@ -52,8 +51,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'django-auditlog'
-copyright = u'2017, Jan-Jelle Kester and contributors'
+project = 'django-auditlog'
+copyright = '2017, Jan-Jelle Kester and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -205,8 +204,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'django-auditlog.tex', u'django-auditlog Documentation',
-   u'Jan-Jelle Kester', 'manual'),
+  ('index', 'django-auditlog.tex', 'django-auditlog Documentation',
+   'Jan-Jelle Kester', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -235,8 +234,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'django-auditlog', u'django-auditlog Documentation',
-     [u'Jan-Jelle Kester'], 1)
+    ('index', 'django-auditlog', 'django-auditlog Documentation',
+     ['Jan-Jelle Kester'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -249,8 +248,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'django-auditlog', u'django-auditlog Documentation',
-   u'Jan-Jelle Kester', 'django-auditlog', '',
+  ('index', 'django-auditlog', 'django-auditlog Documentation',
+   'Jan-Jelle Kester', 'django-auditlog', '',
    'Miscellaneous'),
 ]
 

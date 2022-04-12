@@ -1,4 +1,4 @@
-class PostgresRouter(object):
+class PostgresRouter:
     """
     A router to control all database operations on models for use with tests
     pertaining to the postgres test database.

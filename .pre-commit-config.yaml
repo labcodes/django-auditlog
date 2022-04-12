@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/browniebroke/django-codemod
+    # django-codemod is a tool to automatically
+    # fix Django deprecations.
+    # Any tag/version (>=1.10.0):
+    # https://github.com/browniebroke/django-codemod/tags
+    #
+    # Automatic execution of this hook has been disabled
+    # because it is a bit slow but its configuration is
+    # kept here so it can be easily run:
+    #
+    # pre-commit run --hook-stage manual djcodemod
+    rev: v1.10.0
+    hooks:
+      - id: djcodemod
+        stages: [manual]
+        args: [
+            'run',
+            '--deprecated-in', '1.9',
+            '--deprecated-in', '1.10',
+            '--deprecated-in', '1.11',
+            '--deprecated-in', '2.0',
+            '--deprecated-in', '2.1',
+            '--deprecated-in', '2.2',
+            '--deprecated-in', '3.0',
+        ]
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.31.1
+    hooks:
+      - id: pyupgrade
+        args: ['--py3-plus', '--py39-plus']

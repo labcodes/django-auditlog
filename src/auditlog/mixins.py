@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 MAX = 75
 
 
-class LogEntryAdminMixin(object):
+class LogEntryAdminMixin:
 
     def created(self, obj):
         return obj.timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -24,26 +24,26 @@ class LogEntryAdminMixin(object):
     def user_url(self, obj):
         if obj.actor:
             app_label, model = settings.AUTH_USER_MODEL.split('.')
-            viewname = 'admin:%s_%s_change' % (app_label, model.lower())
+            viewname = f'admin:{app_label}_{model.lower()}_change'
             try:
                 link = urlresolvers.reverse(viewname, args=[obj.actor.id])
             except NoReverseMatch:
-                return u'%s' % (obj.actor)
-            return format_html(u'<a href="{}">{}</a>', link, obj.actor)
+                return '%s' % (obj.actor)
+            return format_html('<a href="{}">{}</a>', link, obj.actor)
 
         return 'system'
     user_url.short_description = 'User'
 
     def resource_url(self, obj):
         app_label, model = obj.content_type.app_label, obj.content_type.model
-        viewname = 'admin:%s_%s_change' % (app_label, model)
+        viewname = f'admin:{app_label}_{model}_change'
         try:
             args = [obj.object_pk] if obj.object_id is None else [obj.object_id]
             link = urlresolvers.reverse(viewname, args=args)
         except NoReverseMatch:
             return obj.object_repr
         else:
-            return format_html(u'<a href="{}">{}</a>', link, obj.object_repr)
+            return format_html('<a href="{}">{}</a>', link, obj.object_repr)
     resource_url.short_description = 'Resource'
 
     def msg_short(self, obj):

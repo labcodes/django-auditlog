@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
-
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.db.models import Model
 from django.utils.six import iteritems
 
 
-class AuditlogModelRegistry(object):
+class AuditlogModelRegistry:
     """
     A registry that keeps track of the models that use Auditlog to track changes.
     """
@@ -117,7 +115,7 @@ class AuditlogModelRegistry(object):
 
 class AuditLogModelRegistry(AuditlogModelRegistry):
     def __init__(self, *args, **kwargs):
-        super(AuditLogModelRegistry, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         raise DeprecationWarning("Use AuditlogModelRegistry instead of AuditLogModelRegistry, AuditLogModelRegistry will be removed in django-auditlog 0.4.0 or later.")
 
 
